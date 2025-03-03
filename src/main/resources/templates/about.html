@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Об авторе</title>
+    <!-- Подключение CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<div th:if="${userRole == 'ADMIN'}">
+    <div th:insert="~{fragments/admin-header :: header}"></div>
+</div>
+<div th:if="${userRole == 'PREPOD'}">
+    <div th:insert="~{fragments/prepod-header :: header}"></div>
+</div>
+<div th:if="${userRole == 'STUDENT'}">
+    <div th:insert="~{fragments/student-header :: header}"></div>
+</div>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Об авторе</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">ФИО: Грушин Антон Александрович</h5>
+            <p class="card-text">
+                <strong>Учебное заведение:</strong> Финансовый Университет при Правительстве РФ<br>
+                <strong>Группа:</strong> ДПИ22-1<br>
+                <strong>Email:</strong> 222585@edu.fa.ru<br>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение зависимостей -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

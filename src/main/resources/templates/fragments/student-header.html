@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Header</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Система мониторинга успеваемости студентов</a>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/student/grades}">Мои оценки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/student/my-group}">Моя группа</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/about}">Об авторе</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="user-info">
+                <span class="navbar-text">Вы вошли как СТУДЕНТ
+                </span>
+                <a class="btn btn-outline-danger logout-btn" th:href="@{/logout}">Выйти</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

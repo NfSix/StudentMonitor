@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Студенты группы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<div th:insert="~{fragments/prepod-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1>Студенты группы <span th:text="${groupName}"></span></h1>
+    <h3 th:text="${subjectPeriod.subject} + ' (' + ${subjectPeriod.academicYear.name} + ')'"></h3>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>Студент</th>
+            <th>Баллы за семестр (0-40)</th>
+            <th>Баллы за экзамен (0-60)</th>
+            <th>Суммарный балл</th>
+            <th>Итоговая оценка</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.lastname + ' ' + student.firstname}"></td>
+            <td>
+                <form th:action="@{/prepod/subjects/{groupId}/{subjectPeriodId}/save-semester(groupId=${groupId}, subjectPeriodId=${subjectPeriod.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" name="studentId" th:value="${student.id}">
+                    <input type="number" name="scoreSemester"
+                           th:value="${studentGrades.get(student).scoreSemester}"
+                           min="0" max="40" required>
+                    <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{/prepod/subjects/{groupId}/{subjectPeriodId}/save-exam(groupId=${groupId}, subjectPeriodId=${subjectPeriod.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" name="studentId" th:value="${student.id}">
+                    <input type="number" name="scoreExam"
+                           th:value="${studentGrades.get(student).scoreExam}"
+                           min="0" max="60" required>
+                    <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                </form>
+            </td>
+            <td th:text="${(studentGrades.get(student).scoreSemester ?: 0) + (studentGrades.get(student).scoreExam ?: 0)}"></td>
+            <td>
+                <form th:action="@{/prepod/subjects/{groupId}/{subjectPeriodId}/save-status(groupId=${groupId}, subjectPeriodId=${subjectPeriod.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" name="studentId" th:value="${student.id}">
+                    <input type="text" name="gradeStatus"
+                           th:value="${studentGrades.get(student).gradeStatus}"
+                           required>
+                    <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+.navbar-custom {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link-custom {
+    margin: 0 15px;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.nav-link-custom:hover {
+    color: #007bff;
+}
+
+.user-info {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn {
+    margin-left: 10px;
+}
+
+.navbar-brand {
+    margin-right: 2rem;
+    font-weight: bold; !important;
+    color: #178dff; !important;
+}
+.navbar-brand:hover {
+    color: #0173e0; !important;
+}
+
+.navbar-nav {
+    margin-left: 0;
+}
+
+
+/*Фиксированная ширина столбцов в таблице баллов*/
+.table-fixed {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table-fixed th.subject-column,
+.table-fixed td.subject-column {
+    width: 30%;
+}
+
+.table-fixed th.semester-column,
+.table-fixed td.semester-column {
+    width: 20%;
+}
+
+.table-fixed th.exam-column,
+.table-fixed td.exam-column {
+    width: 20%;
+}
+
+.table-fixed th.total-column,
+.table-fixed td.total-column {
+    width: 5%;
+}
+
+.table-fixed th.status-column,
+.table-fixed td.status-column {
+    width: 25%;
+}

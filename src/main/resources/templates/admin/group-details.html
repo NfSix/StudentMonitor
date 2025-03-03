@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детали группы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<div th:insert="~{fragments/admin-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1 th:text="${group.name}">Название группы</h1>
+
+    <!-- Кнопка для добавления нового учебного периода -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAcademicYearModal">
+        Добавить учебный период
+    </button>
+
+    <!-- Кнопка для добавления нового предмета -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+        Добавить предмет
+    </button>
+
+    <!-- Список предметов -->
+    <div th:each="academicYear : ${academicYears}">
+        <h2 th:text="${academicYear.name}">Учебный период</h2>
+        <!-- Удалить период -->
+        <a th:if="${subjectCountByAcademicYear.get(academicYear.id) == 0}"
+           th:href="@{/admin/groups/{groupId}/academic-years/delete/{academicYearId}(groupId=${group.id}, academicYearId=${academicYear.id})}"
+           class="btn btn-danger btn-sm">
+            Удалить период
+        </a>
+        <table class="table table-bordered mt-3">
+            <thead>
+            <tr>
+                <th>Предмет</th>
+                <th>Преподаватель</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="psg : ${prepodSubjectGroups}"
+                th:if="${psg.subjectPeriod.academicYear.id == academicYear.id}">
+                <td th:text="${psg.subjectPeriod.subject}">Название предмета</td>
+                <td>
+                    <select class="form-select" th:attr="data-psg-id=${psg.id}" onchange="assignPrepod(this, this.getAttribute('data-psg-id'))">
+                        <option value="">Выберите преподавателя</option>
+                        <option th:each="prepod : ${prepods}"
+                                th:value="${prepod.id}"
+                                th:text="${prepod.lastname + ' ' + prepod.firstname}"
+                                th:selected="${psg.prepod != null && psg.prepod.id == prepod.id}">
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <!-- Кнопка удаления связи -->
+                    <a th:href="@{/admin/groups/{groupId}/prepod-subject-groups/delete/{psgId}(groupId=${group.id}, psgId=${psg.id})}"
+                       class="btn btn-danger btn-sm">
+                        Удалить
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Окно добавления учебного периода -->
+<div class="modal fade" id="addAcademicYearModal" tabindex="-1" aria-labelledby="addAcademicYearModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAcademicYearModalLabel">Добавить учебный период</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/groups/academic-years}" method="post">
+                    <input type="hidden" name="groupId" th:value="${group.id}" />
+                    <div class="mb-3">
+                        <label for="academicYearName" class="form-label">Название учебного периода</label>
+                        <input type="text" class="form-control" id="academicYearName" name="name" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Окно  добавления предмета -->
+<div class="modal fade" id="addSubjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSubjectModalLabel">Добавить предмет</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/groups/{groupId}/subjects(groupId=${group.id})}" method="post">
+                    <input type="hidden" name="groupId" th:value="${group.id}" />
+                    <div class="mb-3">
+                        <label for="subjectName" class="form-label">Название предмета</label>
+                        <input type="text" class="form-control" id="subjectName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="academicYearSelect" class="form-label">Учебный период</label>
+                        <select class="form-select" id="academicYearSelect" name="academicYearId" required>
+                            <option value="">Выберите учебный период</option>
+                            <option th:each="academicYear : ${academicYears}"
+                                    th:value="${academicYear.id}"
+                                    th:text="${academicYear.name}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение зависимостей -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Скрипт назначения преподавателей через выпадающее меню -->
+<script>
+    function assignPrepod(selectElement, psgId) {
+        const prepodId = selectElement.value;
+        if (prepodId) {
+            fetch(`/admin/groups/prepod-subject-groups/${psgId}/assign-prepod`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prepodId: prepodId }),
+            }).then(response => {
+                if (response.ok) {
+                    alert('Преподаватель успешно назначен');
+                } else {
+                    alert('Ошибка при назначении преподавателя');
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

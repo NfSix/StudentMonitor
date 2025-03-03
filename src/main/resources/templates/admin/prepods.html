@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Преподаватели</title>
+    <!-- Подключение CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<!-- Вставка фрагмента header -->
+<div th:insert="~{fragments/admin-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1>Преподаватели</h1>
+
+    <!-- Кнопка добавления преподавателя -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPrepodModal">
+        Добавить преподавателя
+    </button>
+    <div class="alert alert-info mt-3">
+        Удалить можно только преподавателей без привязанных предметов.
+    </div>
+    <!-- Список преподавателей -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Email</th>
+            <th>Номер преподавателя</th>
+            <th>Факультет</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="prepod : ${prepods}">
+            <td th:text="${prepod.id}"></td>
+            <td th:text="${prepod.lastname}"></td>
+            <td th:text="${prepod.firstname}"></td>
+            <td th:text="${prepod.patronymic}"></td>
+            <td th:text="${prepod.email}"></td>
+            <td th:text="${prepod.prepodIdNumber}"></td>
+            <td th:text="${prepod.department.name}"></td>
+            <td>
+                <!-- Кнопка редактирования преподавателя -->
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editPrepodModal"
+                        th:attr="data-prepod-id=${prepod.id}, data-prepod-firstname=${prepod.firstname}, data-prepod-lastname=${prepod.lastname}, data-prepod-patronymic=${prepod.patronymic}, data-prepod-email=${prepod.email}, data-prepod-prepodIdNumber=${prepod.prepodIdNumber}, data-prepod-departmentId=${prepod.department.id}">
+                    Редактировать
+                </button>
+                <!-- Кнопка удаления преподавателя -->
+                <a th:href="@{/admin/prepods/delete/{id}(id=${prepod.id})}"
+                   th:classappend="${canDeletePrepod.get(prepod.id)} ? 'btn-danger' : 'btn-secondary disabled'"
+                   class="btn">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Окно добавления преподавателя -->
+<div class="modal fade" id="addPrepodModal" tabindex="-1" aria-labelledby="addPrepodModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPrepodModalLabel">Добавить преподавателя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/prepods}" method="post">
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="patronymic" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="patronymic" name="patronymic">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prepodIdNumber" class="form-label">Номер преподавателя</label>
+                        <input type="text" class="form-control" id="prepodIdNumber" name="prepodIdNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="departmentId" class="form-label">Факультет</label>
+                        <select class="form-control" id="departmentId" name="department.id" required>
+                            <option th:each="department : ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Окно редактирования преподавателя -->
+<div class="modal fade" id="editPrepodModal" tabindex="-1" aria-labelledby="editPrepodModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPrepodModalLabel">Редактировать преподавателя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/prepods/{id}(id=${prepod.id})}" method="post" th:object="${prepod}">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="mb-3">
+                        <label for="editFirstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="editFirstname" th:field="*{firstname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="editLastname" th:field="*{lastname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPatronymic" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="editPatronymic" th:field="*{patronymic}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" th:field="*{email}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrepodIdNumber" class="form-label">Номер преподавателя</label>
+                        <input type="text" class="form-control" id="editPrepodIdNumber" th:field="*{prepodIdNumber}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDepartmentId" class="form-label">Факультет</label>
+                        <select class="form-control" id="editDepartmentId" th:field="*{department.id}" required>
+                            <option th:each="department : ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение зависимостей -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Скрипт для заполнения данных в окне редактирования -->
+<script>
+    document.getElementById('editPrepodModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var prepodId = button.getAttribute('data-prepod-id');
+        var firstname = button.getAttribute('data-prepod-firstname');
+        var lastname = button.getAttribute('data-prepod-lastname');
+        var patronymic = button.getAttribute('data-prepod-patronymic');
+        var email = button.getAttribute('data-prepod-email');
+        var prepodIdNumber = button.getAttribute('data-prepod-prepodIdNumber');
+        var departmentId = button.getAttribute('data-prepod-departmentId');
+
+        var modal = event.target;
+        modal.querySelector('input[name="id"]').value = prepodId;
+        modal.querySelector('input[name="firstname"]').value = firstname;
+        modal.querySelector('input[name="lastname"]').value = lastname;
+        modal.querySelector('input[name="patronymic"]').value = patronymic;
+        modal.querySelector('input[name="email"]').value = email;
+        modal.querySelector('input[name="prepodIdNumber"]').value = prepodIdNumber;
+        modal.querySelector('select[name="department.id"]').value = departmentId;
+
+        modal.querySelector('form').action = '/admin/prepods/' + prepodId;
+    });
+</script>
+</body>
+</html>

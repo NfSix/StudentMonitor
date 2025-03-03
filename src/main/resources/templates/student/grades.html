@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Мои оценки</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<div th:insert="~{fragments/student-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1>Мои оценки</h1>
+
+    <div th:each="entry : ${gradesByAcademicYear}">
+        <h3 th:text="${entry.key.name}"></h3>
+        <table class="table table-bordered mt-3 table-fixed">
+            <thead>
+            <tr>
+                <th class="subject-column">Предмет</th>
+                <th class="semester-column">Баллы за семестр</th>
+                <th class="exam-column">Баллы за экзамен</th>
+                <th class="total-column">Итог</th>
+                <th class="status-column">Результат</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="grade : ${entry.value}">
+                <td class="subject-column" th:text="${grade.subjectPeriod.subject}"></td>
+                <td class="semester-column" th:text="${grade.scoreSemester}"></td>
+                <td class="exam-column" th:text="${grade.scoreExam}"></td>
+                <td class="total-column" th:text="${(grade.scoreSemester ?: 0) + (grade.scoreExam ?: 0)}"></td>
+                <td class="status-column" th:text="${grade.gradeStatus}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Факультеты</title>
+    <!-- Подключение CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<!-- Вставка фрагмента header -->
+<div th:insert="~{fragments/admin-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1>Факультеты</h1>
+
+    <!-- Кнопка добавления нового факультета -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+        Добавить факультет
+    </button>
+
+    <!-- Список факультетов -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название факультета</th>
+            <th>Действия (удалить можно только факультеты без привязанных преподавателей)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="department : ${departments}">
+            <td th:text="${department.id}"></td>
+            <td th:text="${department.name}"></td>
+            <td>
+                <!-- Кнопка для редактирования факультета -->
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editDepartmentModal"
+                        th:attr="data-department-id=${department.id}, data-department-name=${department.name}">
+                    Редактировать
+                </button>
+                <!-- Кнопка для удаления факультета -->
+                <a th:href="@{/admin/departments/delete/{id}(id=${department.id})}"
+                   th:classappend="${canDeleteDepartment.get(department.id)} ? 'btn-danger' : 'btn-secondary disabled'"
+                   class="btn">
+                    Удалить
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Окно добавления факультета -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDepartmentModalLabel">Добавить факультет</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/departments}" method="post">
+                    <div class="mb-3">
+                        <label for="departmentName" class="form-label">Название факультета</label>
+                        <input type="text" class="form-control" id="departmentName" name="name" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Окно редактирования факультета -->
+<div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-labelledby="editDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editDepartmentModalLabel">Редактировать факультет</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/departments/{id}(id=${department.id})}" method="post" th:object="${department}">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="mb-3">
+                        <label for="editDepartmentName" class="form-label">Название факультета</label>
+                        <input type="text" class="form-control" id="editDepartmentName" th:field="*{name}" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение зависимостей -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Скрипт для заполнения данных в окне редактирования -->
+<script>
+    document.getElementById('editDepartmentModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var departmentId = button.getAttribute('data-department-id');
+        var departmentName = button.getAttribute('data-department-name');
+
+        var modal = event.target;
+        modal.querySelector('input[name="id"]').value = departmentId;
+        modal.querySelector('input[name="name"]').value = departmentName;
+
+        modal.querySelector('form').action = '/admin/departments/' + departmentId;
+
+    });
+</script>
+</body>
+</html>

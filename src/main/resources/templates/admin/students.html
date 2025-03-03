@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Студенты</title>
+    <!-- Подключение CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:insert="~{fragments/admin-header :: header}"></div>
+
+<div class="container mt-4">
+    <h1>Студенты</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+        Добавить студента
+    </button>
+    <table class="table table-bordered" id="studentsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Номер студенческого</th>
+            <th>Email</th>
+            <th>Группа</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.id}"></td>
+            <td th:text="${student.lastname}"></td>
+            <td th:text="${student.firstname}"></td>
+            <td th:text="${student.patronymic}"></td>
+            <td th:text="${student.studentIdNumber}"></td>
+            <td th:text="${student.email}"></td>
+            <td th:text="${student.group.name}"></td>
+            <td>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal" th:attr="data-student-id=${student.id}, data-student-firstname=${student.firstname}, data-student-lastname=${student.lastname}, data-student-patronymic=${student.patronymic}, data-student-email=${student.email}, data-student-studentIdNumber=${student.studentIdNumber}">
+                    Редактировать
+                </button>
+                <a th:href="@{/admin/students/delete/{id}(id=${student.id})}" class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Окно добавления студента -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStudentModalLabel">Добавить студента</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/students}" method="post" th:object="${student}">
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="firstname" th:field="*{firstname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="lastname" th:field="*{lastname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="patronymic" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="patronymic" th:field="*{patronymic}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="studentIdNumber" class="form-label">Номер студенческого</label>
+                        <input type="text" class="form-control" id="studentIdNumber" th:field="*{studentIdNumber}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="groupId" class="form-label">Группа</label>
+                        <select class="form-control" id="groupId" th:field="*{group.id}" required>
+                            <option value="">Выберите группу</option>
+                            <option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Окно редактирования студента -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStudentModalLabel">Редактировать студента</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admin/students/{id}(id=${student.id})}" method="post" th:object="${student}">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="mb-3">
+                        <label for="editFirstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="editFirstname" th:field="*{firstname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="editLastname" th:field="*{lastname}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPatronymic" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="editPatronymic" th:field="*{patronymic}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStudentIdNumber" class="form-label">Номер студенческого</label>
+                        <input type="text" class="form-control" id="editStudentIdNumber" th:field="*{studentIdNumber}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" th:field="*{email}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editGroupId" class="form-label">Группа</label>
+                        <select class="form-control" id="editGroupId" th:field="*{group.id}" required>
+                            <option value="">Выберите группу</option>
+                            <option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение зависимостей -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Скрипт для заполнения данных в окне редактирования -->
+<script>
+    document.getElementById('editStudentModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var studentId = button.getAttribute('data-student-id');
+        var firstname = button.getAttribute('data-student-firstname');
+        var lastname = button.getAttribute('data-student-lastname');
+        var patronymic = button.getAttribute('data-student-patronymic');
+        var studentIdNumber = button.getAttribute('data-student-studentIdNumber');
+        var email = button.getAttribute('data-student-email');
+
+        var modal = event.target;
+        modal.querySelector('input[name="id"]').value = studentId;
+        modal.querySelector('input[name="firstname"]').value = firstname;
+        modal.querySelector('input[name="lastname"]').value = lastname;
+        modal.querySelector('input[name="patronymic"]').value = patronymic;
+        modal.querySelector('input[name="studentIdNumber"]').value = studentIdNumber;
+        modal.querySelector('input[name="email"]').value = email;
+
+        modal.querySelector('form').action = '/admin/students/' + studentId;
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Инициализация DataTables
+        $('#studentsTable').DataTable({
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json"
+            },
+            columnDefs: [
+                { orderable: true, targets: [1, 2, 3, 6] },
+                { orderable: false, targets: [0, 4, 5, 7] }
+            ]
+        });
+    });
+</script>
+</body>
+</html>
